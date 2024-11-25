@@ -67,19 +67,19 @@ target_link_libraries(lib_ecm PRIVATE lib_maths)
 #@@@-
 
 ## 6 - Platformer
-file(GLOB_RECURSE SOURCES lab_7_platformer/*.cpp lab_7_platformer/*.h)
-file(GLOB_RECURSE CMPNTS lab_7_platformer/components/*.cpp lab_7_platformer/components/*.h)
-file(GLOB_RECURSE SCENES lab_7_platformer/scenes/*.cpp lab_7_platformer/scenes/*.h)
-add_executable(PRACTICAL_7_PLATFORMER ${SOURCES} ${RESOURCE_FILES})
+file(GLOB_RECURSE SOURCES dungeon_dashi/*.cpp dungeon_dashi/*.h)
+file(GLOB_RECURSE CMPNTS dungeon_dashi/components/*.cpp dungeon_dashi/components/*.h)
+file(GLOB_RECURSE SCENES dungeon_dashi/scenes/*.cpp dungeon_dashi/scenes/*.h)
+add_executable(DUNGEON_DASHI ${SOURCES} ${RESOURCE_FILES})
 source_group("components" FILES ${CMPNTS})
 source_group("resources" FILES ${RESOURCE_FILES})
-#target_include_directories(lab_7_platformer SYSTEM PRIVATE ${SFML_INCS} ${B2D_INCS})
-target_link_libraries(PRACTICAL_7_PLATFORMER lib_engine)
-set(EXECUTABLES ${EXECUTABLES} PRACTICAL_7_PLATFORMER)
+#target_include_directories(dungeon_dashi SYSTEM PRIVATE ${SFML_INCS} ${B2D_INCS})
+target_link_libraries(DUNGEON_DASHI lib_engine)
+set(EXECUTABLES ${EXECUTABLES} DUNGEON_DASHI)
 
-add_dependencies(PRACTICAL_7_PLATFORMER copy_resources)
+add_dependencies(DUNGEON_DASHI copy_resources)
 
-set_target_properties(PRACTICAL_7_PLATFORMER 
+set_target_properties(DUNGEON_DASHI 
     PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(Configuration)
 )
