@@ -10,8 +10,9 @@ static shared_ptr<b2World> world;
 const int32 velocityIterations = 6;
 const int32 positionIterations = 2;
 
+b2Vec2 gravity(0.0f, -10.0f);
+
 void initialise() {
-  b2Vec2 gravity(0.0f, -10.0f);
   // Construct a world object, which will hold and simulate the rigid
   // bodies.
   world.reset(new b2World(gravity));
@@ -21,7 +22,13 @@ void shutdown() { world.reset(); }
 
 void update(const double& dt) {
   world->Step((float)dt, velocityIterations, positionIterations);
+
 }
+
+/*void GravFlip() {
+    gravity *= -1;                 //Old Gravity inversion function
+    world->SetGravity(gravity);
+} */ 
 
 std::shared_ptr<b2World> GetWorld() { return world; }
 

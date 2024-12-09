@@ -7,6 +7,7 @@ using namespace std;
 using namespace sf;
 using namespace Physics;
 
+
 bool PlayerPhysicsComponent::isGrounded() const {
   auto touch = getTouching();
   const auto& pos = _body->GetPosition();
@@ -54,7 +55,7 @@ void PlayerPhysicsComponent::update(double dt) {
   }
 
   // Handle Jump
-  if (Keyboard::isKeyPressed(Keyboard::Up)) {
+  if (Keyboard::isKeyPressed(Keyboard::Space)) {
     _grounded = isGrounded();
     if (_grounded) {
       setVelocity(Vector2f(getVelocity().x, 0.f));
@@ -62,6 +63,14 @@ void PlayerPhysicsComponent::update(double dt) {
       impulse(Vector2f(0, -6.f));
     }
   }
+
+  //Handle Gravity Inversion
+  if (Keyboard::isKeyPressed(Keyboard::Up)) {
+      //GravFlip();    //Old Method which inverted entire world Gravity, Caused noticable input lag
+      int GravMod = _body->GetGravityScale();
+      _body->SetGravityScale(GravMod * -1);   //New function which reverses the Gravity scaling on the player object exclusively
+  }
+  
 
   //Are we in air?
   if (!_grounded) {
