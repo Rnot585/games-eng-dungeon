@@ -7,6 +7,7 @@ namespace Physics {
 void initialise();
 void shutdown();
 void update(const double&);
+//void GravFlip();
 
 std::shared_ptr<b2World> GetWorld();
 
