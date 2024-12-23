@@ -27,6 +27,8 @@ float LevelSystem::_tileSize(100.f);
 Vector2f LevelSystem::_offset(0.0f, 30.0f);
 // Vector2f LevelSystem::_offset(0,0);
 vector<std::unique_ptr<sf::RectangleShape>> LevelSystem::_sprites;
+vector<std::unique_ptr<sf::Sprite>> LevelSystem::_textureSprites;
+sf::Texture LevelSystem::bgTexture;
 
 void LevelSystem::loadLevelFile(const std::string& path, float tileSize) {
   _tileSize = tileSize;
@@ -77,20 +79,24 @@ void LevelSystem::loadLevelFile(const std::string& path, float tileSize) {
 
 void LevelSystem::buildSprites(bool optimise) {
   _sprites.clear();
+  _textureSprites.clear();
 
   struct tp {
     sf::Vector2f p;
     sf::Vector2f s;
     sf::Color c;
   };
+  vector<tp> bgtps;
   vector<tp> tps;
   const auto tls = Vector2f(_tileSize, _tileSize);
   for (size_t y = 0; y < _height; ++y) {
     for (size_t x = 0; x < _width; ++x) {
       Tile t = getTile({x, y});
       if (t == EMPTY) {
+          bgtps.push_back({ getTilePosition({x, y}), tls, getColor(t) });
         continue;
       }
+      //std::cout << "tile type = " << t << std::endl;
       tps.push_back({getTilePosition({x, y}), tls, getColor(t)});
     }
   }
@@ -157,15 +163,58 @@ void LevelSystem::buildSprites(bool optimise) {
     tps.swap(tpox);
   }
 
-  for (auto& t : tps) {
-    auto s = make_unique<sf::RectangleShape>();
-    s->setPosition(t.p);
-    s->setSize(t.s);
-    s->setFillColor(Color::Red);
-    s->setFillColor(t.c);
-    // s->setFillColor(Color(rand()%255,rand()%255,rand()%255));
-    _sprites.push_back(move(s));
+
+  bool bgTextureLoaded;
+
+  if (!bgTexture.loadFromFile("res/spritesheets/Brick.png")) {
+      bgTextureLoaded = false;
+      std::cout << "Failed to load texture!" << std::endl;
   }
+  else {
+      bgTextureLoaded = true;
+  }
+
+  for (auto& t : tps) {
+      
+      if (t.c == Color::Transparent && bgTextureLoaded) {
+          auto s = make_unique<sf::Sprite>(bgTexture);
+          s->setPosition(t.p);
+          //s->setTexture(bgTexture);
+          s->setOrigin({ 16.f,16.f });
+          s->setScale({ 2.5f,2.5f });
+          
+          //s->setSize(t.s);
+         
+          //s->setFillColor(t.c);
+          _textureSprites.push_back(move(s));
+
+          std::cout << "made texture" << std::endl;
+
+      }
+      else {
+
+          auto s = make_unique<sf::RectangleShape>();
+          s->setPosition(t.p);
+          s->setSize(t.s);
+          //s->setFillColor(Color::Red);
+          s->setFillColor(t.c);
+          // s->setFillColor(Color(rand()%255,rand()%255,rand()%255));
+          _sprites.push_back(move(s));
+      }
+    
+  }
+  if (bgTextureLoaded) {
+      for (auto& t : bgtps) {
+          auto s = make_unique<sf::Sprite>(bgTexture);
+          s->setPosition(t.p + tls);
+          s->setOrigin({ 16.f,16.f });
+          s->setScale({ 2.5f,2.5f });
+          _textureSprites.push_back(move(s));
+
+          //std::cout << "made texture" << std::endl;
+      }
+  }
+  
 
   cout << "Level with " << (_width * _height) << " Tiles, With " << nonempty
        << " Not Empty, using: " << _sprites.size() << " Sprites\n";
@@ -174,6 +223,11 @@ void LevelSystem::buildSprites(bool optimise) {
 void LevelSystem::render(RenderWindow& window) {
   for (auto& t : _sprites) {
     window.draw(*t);
+  }
+
+  //if (_textureSprites.size() <= 0) { return; }
+  for (auto& t : _textureSprites) {
+      window.draw(*t);
   }
 }
 
@@ -232,6 +286,7 @@ void LevelSystem::setOffset(const Vector2f& _offset) {
 void LevelSystem::unload() {
   cout << "LevelSystem unloading\n";
   _sprites.clear();
+  _textureSprites.clear();
   _tiles.reset();
   _width = 0;
   _height = 0;

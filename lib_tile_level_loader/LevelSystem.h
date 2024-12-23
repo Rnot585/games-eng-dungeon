@@ -57,6 +57,8 @@ protected:
   static sf::Vector2f _offset;
 
   static std::vector<std::unique_ptr<sf::RectangleShape>> _sprites;
+  static std::vector<std::unique_ptr<sf::Sprite>> _textureSprites;
+  static sf::Texture bgTexture;
 
   static void buildSprites(bool optimise = true);
 
