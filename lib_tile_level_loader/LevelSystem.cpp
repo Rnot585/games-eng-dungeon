@@ -92,7 +92,7 @@ void LevelSystem::buildSprites(bool optimise) {
   for (size_t y = 0; y < _height; ++y) {
     for (size_t x = 0; x < _width; ++x) {
       Tile t = getTile({x, y});
-      if (t == EMPTY) {
+      if (t == EMPTY || t == START || t == END) {
           bgtps.push_back({ getTilePosition({x, y}), tls, getColor(t) });
         continue;
       }
@@ -176,7 +176,7 @@ void LevelSystem::buildSprites(bool optimise) {
 
   for (auto& t : tps) {
       
-      if (t.c == Color::Transparent && bgTextureLoaded) {
+      if (t.c == Color::Transparent && bgTextureLoaded) { //Transparent == background
           auto s = make_unique<sf::Sprite>(bgTexture);
           s->setPosition(t.p);
           //s->setTexture(bgTexture);
@@ -191,7 +191,7 @@ void LevelSystem::buildSprites(bool optimise) {
           std::cout << "made texture" << std::endl;
 
       }
-      else {
+      else { //Load the rest of the sprites normally
 
           auto s = make_unique<sf::RectangleShape>();
           s->setPosition(t.p);
@@ -203,7 +203,7 @@ void LevelSystem::buildSprites(bool optimise) {
       }
     
   }
-  if (bgTextureLoaded) {
+  if (bgTextureLoaded) { //Now load all the backgriund sprite
       for (auto& t : bgtps) {
           auto s = make_unique<sf::Sprite>(bgTexture);
           s->setPosition(t.p + tls);

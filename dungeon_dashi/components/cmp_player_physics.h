@@ -8,6 +8,9 @@ protected:
   sf::Vector2f _maxVelocity;
   bool _grounded;
   float _groundspeed;
+  
+  double _gravityChangeCooldown;
+  bool _gravityChangePressedLastFrame;
 
   bool isGrounded() const;
 

@@ -8,6 +8,24 @@ using namespace sf;
 using namespace Physics;
 
 
+static std::map<String, Keyboard::Key> keybindsMap = {
+    {"move_Left", Keyboard::A},
+    {"move_Right", Keyboard::D},
+    {"move_Up", Keyboard::W},
+    {"move_Down", Keyboard::S},
+    {"move_Jump", Keyboard::Space},
+    {"move_GravityFlip", Keyboard::Up}
+};
+
+
+//Keyboard::Key keybinds[] = { 
+//    Keyboard::A, //Move left
+//    Keyboard::D, //Move right
+//    Keyboard::W, //Move up
+//    Keyboard::S, //Move Down
+//    Keyboard::Space, //Jump
+//    Keyboard::Up }; //Change gravity
+
 bool PlayerPhysicsComponent::isGrounded() const {
   auto touch = getTouching();
   const auto& pos = _body->GetPosition();
@@ -39,10 +57,10 @@ void PlayerPhysicsComponent::update(double dt) {
     teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
   }
 
-  if (Keyboard::isKeyPressed(Keyboard::Left) ||
-      Keyboard::isKeyPressed(Keyboard::Right)) {
+  if (Keyboard::isKeyPressed(keybindsMap["move_Left"]) ||
+      Keyboard::isKeyPressed(keybindsMap["move_Right"])) {
     // Moving Either Left or Right
-    if (Keyboard::isKeyPressed(Keyboard::Right)) {
+    if (Keyboard::isKeyPressed(keybindsMap["move_Right"])) { 
       if (getVelocity().x < _maxVelocity.x)
         impulse({(float)(dt * _groundspeed), 0});
     } else {
@@ -55,22 +73,34 @@ void PlayerPhysicsComponent::update(double dt) {
   }
 
   // Handle Jump
-  if (Keyboard::isKeyPressed(Keyboard::Space)) {
+  if (Keyboard::isKeyPressed(keybindsMap["move_Jump"]) ||
+      Keyboard::isKeyPressed(keybindsMap["move_Up"])) {
     _grounded = isGrounded();
     if (_grounded) {
       setVelocity(Vector2f(getVelocity().x, 0.f));
       teleport(Vector2f(pos.x, pos.y - 2.0f));
       impulse(Vector2f(0, -6.f));
+      
     }
   }
 
+
   //Handle Gravity Inversion
-  if (Keyboard::isKeyPressed(Keyboard::Up)) {
+  if (Keyboard::isKeyPressed(keybindsMap["move_GravityFlip"]) && _gravityChangeCooldown <= 0 && _gravityChangePressedLastFrame == false) {
       //GravFlip();    //Old Method which inverted entire world Gravity, Caused noticable input lag
       int GravMod = _body->GetGravityScale();
       _body->SetGravityScale(GravMod * -1);   //New function which reverses the Gravity scaling on the player object exclusively
+      
+      _gravityChangeCooldown = 0.1;
   }
-  
+  else if(_gravityChangeCooldown > 0) { //Added cooldown to stop gravity changing too quickly
+      //std::cout << _gravityChangeCooldown << "\n";
+      _gravityChangeCooldown -= dt;
+  }
+
+  _gravityChangePressedLastFrame = Keyboard::isKeyPressed(keybindsMap["move_GravityFlip"]); //Makes it so gravity can only change once per button press
+
+  //std::cout << _gravityChangePressedLastFrame << "\n";
 
   //Are we in air?
   if (!_grounded) {
@@ -102,4 +132,7 @@ PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p,
   _body->SetFixedRotation(true);
   //Bullet items have higher-res collision detection
   _body->SetBullet(true);
+
+  _gravityChangePressedLastFrame = false;
+  _gravityChangeCooldown = 0.1;
 }
