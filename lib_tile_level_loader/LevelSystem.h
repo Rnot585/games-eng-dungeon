@@ -58,7 +58,9 @@ protected:
 
 	static std::vector<std::unique_ptr<sf::RectangleShape>> _sprites;
 	static std::vector<std::unique_ptr<sf::Sprite>> _textureSprites;
-	static sf::Texture bgTexture;
+
+	static std::map<char, sf::Texture> _spriteSheets;
+	
 
 	static void buildSprites(bool optimise = true);
 
