@@ -4,20 +4,20 @@
 
 class PlayerPhysicsComponent : public PhysicsComponent {
 protected:
-  b2Vec2 _size;
-  sf::Vector2f _maxVelocity;
-  bool _grounded;
-  float _groundspeed;
-  
-  double _gravityChangeCooldown;
-  bool _gravityChangePressedLastFrame;
+	b2Vec2 _size;
+	sf::Vector2f _maxVelocity;
+	bool _grounded;
+	float _groundspeed;
 
-  bool isGrounded() const;
+	double _gravityChangeCooldown;
+	bool _gravityChangePressedLastFrame;
+
+	bool isGrounded() const;
 
 public:
-  void update(double dt) override;
+	void update(double dt) override;
 
-  explicit PlayerPhysicsComponent(Entity* p, const sf::Vector2f& size);
+	explicit PlayerPhysicsComponent(Entity* p, const sf::Vector2f& size);
 
-  PlayerPhysicsComponent() = delete;
+	PlayerPhysicsComponent() = delete;
 };

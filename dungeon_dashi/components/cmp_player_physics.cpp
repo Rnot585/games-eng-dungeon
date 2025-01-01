@@ -9,12 +9,12 @@ using namespace Physics;
 
 
 static std::map<String, Keyboard::Key> keybindsMap = {
-    {"move_Left", Keyboard::A},
-    {"move_Right", Keyboard::D},
-    {"move_Up", Keyboard::W},
-    {"move_Down", Keyboard::S},
-    {"move_Jump", Keyboard::Space},
-    {"move_GravityFlip", Keyboard::Up}
+	{"move_Left", Keyboard::A},
+	{"move_Right", Keyboard::D},
+	{"move_Up", Keyboard::W},
+	{"move_Down", Keyboard::S},
+	{"move_Jump", Keyboard::Space},
+	{"move_GravityFlip", Keyboard::Up}
 };
 
 
@@ -27,112 +27,115 @@ static std::map<String, Keyboard::Key> keybindsMap = {
 //    Keyboard::Up }; //Change gravity
 
 bool PlayerPhysicsComponent::isGrounded() const {
-  auto touch = getTouching();
-  const auto& pos = _body->GetPosition();
-  const float halfPlrHeigt = _size.y * .5f;
-  const float halfPlrWidth = _size.x * .52f;
-  b2WorldManifold manifold;
-  for (const auto& contact : touch) {
-    contact->GetWorldManifold(&manifold);
-    const int numPoints = contact->GetManifold()->pointCount;
-    bool onTop = numPoints > 0;
-    // If all contacts are below the player.
-    for (int j = 0; j < numPoints; j++) {
-      onTop &= (manifold.points[j].y < pos.y - halfPlrHeigt);
-    }
-    if (onTop) {
-      return true;
-    }
-  }
+	auto touch = getTouching();
+	const auto& pos = _body->GetPosition();
+	const float halfPlrHeigt = _size.y * .5f;
+	const float halfPlrWidth = _size.x * .52f;
+	b2WorldManifold manifold;
+	for (const auto& contact : touch) {
+		contact->GetWorldManifold(&manifold);
+		const int numPoints = contact->GetManifold()->pointCount;
+		bool onTop = numPoints > 0;
+		// If all contacts are below the player.
+		for (int j = 0; j < numPoints; j++) {
+			onTop &= (manifold.points[j].y < pos.y - halfPlrHeigt);
+		}
+		if (onTop) {
+			return true;
+		}
+	}
 
-  return false;
+	return false;
 }
 
 void PlayerPhysicsComponent::update(double dt) {
 
-  const auto pos = _parent->getPosition();
+	const auto pos = _parent->getPosition();
 
-  //Teleport to start if we fall off map.
-  if (pos.y > ls::getHeight() * ls::getTileSize()) {
-    teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-  }
+	//Teleport to start if we fall off map.
+	if (pos.y > ls::getHeight() * ls::getTileSize()) {
+		teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
+	}
 
-  if (Keyboard::isKeyPressed(keybindsMap["move_Left"]) ||
-      Keyboard::isKeyPressed(keybindsMap["move_Right"])) {
-    // Moving Either Left or Right
-    if (Keyboard::isKeyPressed(keybindsMap["move_Right"])) { 
-      if (getVelocity().x < _maxVelocity.x)
-        impulse({(float)(dt * _groundspeed), 0});
-    } else {
-      if (getVelocity().x > -_maxVelocity.x)
-        impulse({-(float)(dt * _groundspeed), 0});
-    }
-  } else {
-    // Dampen X axis movement
-    dampen({0.9f, 1.0f});
-  }
+	if (Keyboard::isKeyPressed(keybindsMap["move_Left"]) ||
+		Keyboard::isKeyPressed(keybindsMap["move_Right"])) {
+		// Moving Either Left or Right
+		if (Keyboard::isKeyPressed(keybindsMap["move_Right"])) {
+			if (getVelocity().x < _maxVelocity.x)
+				impulse({ (float)(dt * _groundspeed), 0 });
+		}
+		else {
+			if (getVelocity().x > -_maxVelocity.x)
+				impulse({ -(float)(dt * _groundspeed), 0 });
+		}
+	}
+	else {
+		// Dampen X axis movement
+		dampen({ 0.9f, 1.0f });
+	}
 
-  // Handle Jump
-  if (Keyboard::isKeyPressed(keybindsMap["move_Jump"]) ||
-      Keyboard::isKeyPressed(keybindsMap["move_Up"])) {
-    _grounded = isGrounded();
-    if (_grounded) {
-      setVelocity(Vector2f(getVelocity().x, 0.f));
-      teleport(Vector2f(pos.x, pos.y - 2.0f));
-      impulse(Vector2f(0, -6.f));
-      
-    }
-  }
+	// Handle Jump
+	if (Keyboard::isKeyPressed(keybindsMap["move_Jump"]) ||
+		Keyboard::isKeyPressed(keybindsMap["move_Up"])) {
+		_grounded = isGrounded();
+		if (_grounded) {
+			setVelocity(Vector2f(getVelocity().x, 0.f));
+			teleport(Vector2f(pos.x, pos.y - 2.0f));
+			impulse(Vector2f(0, -6.f));
+
+		}
+	}
 
 
-  //Handle Gravity Inversion
-  if (Keyboard::isKeyPressed(keybindsMap["move_GravityFlip"]) && _gravityChangeCooldown <= 0 && _gravityChangePressedLastFrame == false) {
-      //GravFlip();    //Old Method which inverted entire world Gravity, Caused noticable input lag
-      int GravMod = _body->GetGravityScale();
-      _body->SetGravityScale(GravMod * -1);   //New function which reverses the Gravity scaling on the player object exclusively
-      
-      _gravityChangeCooldown = 0.1;
-  }
-  else if(_gravityChangeCooldown > 0) { //Added cooldown to stop gravity changing too quickly
-      //std::cout << _gravityChangeCooldown << "\n";
-      _gravityChangeCooldown -= dt;
-  }
+	//Handle Gravity Inversion
+	if (Keyboard::isKeyPressed(keybindsMap["move_GravityFlip"]) && _gravityChangeCooldown <= 0 && _gravityChangePressedLastFrame == false) {
+		//GravFlip();    //Old Method which inverted entire world Gravity, Caused noticable input lag
+		int GravMod = _body->GetGravityScale();
+		_body->SetGravityScale(GravMod * -1);   //New function which reverses the Gravity scaling on the player object exclusively
 
-  _gravityChangePressedLastFrame = Keyboard::isKeyPressed(keybindsMap["move_GravityFlip"]); //Makes it so gravity can only change once per button press
+		_gravityChangeCooldown = 0.1;
+	}
+	else if (_gravityChangeCooldown > 0) { //Added cooldown to stop gravity changing too quickly
+		//std::cout << _gravityChangeCooldown << "\n";
+		_gravityChangeCooldown -= dt;
+	}
 
-  //std::cout << _gravityChangePressedLastFrame << "\n";
+	_gravityChangePressedLastFrame = Keyboard::isKeyPressed(keybindsMap["move_GravityFlip"]); //Makes it so gravity can only change once per button press
 
-  //Are we in air?
-  if (!_grounded) {
-    // Check to see if we have landed yet
-    _grounded = isGrounded();
-    // disable friction while jumping
-    setFriction(0.f);
-  } else {
-    setFriction(0.1f);
-  }
+	//std::cout << _gravityChangePressedLastFrame << "\n";
 
-  // Clamp velocity.
-  auto v = getVelocity();
-  v.x = copysign(min(abs(v.x), _maxVelocity.x), v.x);
-  v.y = copysign(min(abs(v.y), _maxVelocity.y), v.y);
-  setVelocity(v);
+	//Are we in air?
+	if (!_grounded) {
+		// Check to see if we have landed yet
+		_grounded = isGrounded();
+		// disable friction while jumping
+		setFriction(0.f);
+	}
+	else {
+		setFriction(0.1f);
+	}
 
-  PhysicsComponent::update(dt);
+	// Clamp velocity.
+	auto v = getVelocity();
+	v.x = copysign(min(abs(v.x), _maxVelocity.x), v.x);
+	v.y = copysign(min(abs(v.y), _maxVelocity.y), v.y);
+	setVelocity(v);
+
+	PhysicsComponent::update(dt);
 }
 
 PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p,
-                                               const Vector2f& size)
-    : PhysicsComponent(p, true, size) {
-  _size = sv2_to_bv2(size, true);
-  _maxVelocity = Vector2f(200.f, 400.f);
-  _groundspeed = 30.f;
-  _grounded = false;
-  _body->SetSleepingAllowed(false);
-  _body->SetFixedRotation(true);
-  //Bullet items have higher-res collision detection
-  _body->SetBullet(true);
+	const Vector2f& size)
+	: PhysicsComponent(p, true, size) {
+	_size = sv2_to_bv2(size, true);
+	_maxVelocity = Vector2f(200.f, 400.f);
+	_groundspeed = 30.f;
+	_grounded = false;
+	_body->SetSleepingAllowed(false);
+	_body->SetFixedRotation(true);
+	//Bullet items have higher-res collision detection
+	_body->SetBullet(true);
 
-  _gravityChangePressedLastFrame = false;
-  _gravityChangeCooldown = 0.1;
+	_gravityChangePressedLastFrame = false;
+	_gravityChangeCooldown = 0.1;
 }
