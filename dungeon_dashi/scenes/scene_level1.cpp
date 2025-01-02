@@ -25,11 +25,18 @@ void Level1Scene::Load() {
 	{
 		player = makeEntity();
 		player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-		auto s = player->addComponent<ShapeComponent>();
-		s->setShape<sf::RectangleShape>(Vector2f(0.4f, 0.8f)*tileSize);
-		s->getShape().setFillColor(Color::Magenta);
-		s->getShape().setOrigin(Vector2f(0.4f, 0.8f)*tileSize/2.f);
+		//auto s = player->addComponent<ShapeComponent>();
+		//s->setShape<sf::RectangleShape>(Vector2f(0.4f, 0.8f)*tileSize);
+		//s->getShape().setFillColor(Color::Magenta);
+		//s->getShape().setOrigin(Vector2f(0.4f, 0.8f)*tileSize/2.f);
 
+		shared_ptr<sf::Texture> playerTex = make_shared<sf::Texture>();
+		playerTex->loadFromFile("res/spritesheets/WeeCharacter.png");
+
+		auto s = player->addComponent<SpriteComponent>();
+		s->setTexure(playerTex);
+		s->getSprite().setScale(Vector2f(tileSize, tileSize)/16.f);
+		s->getSprite().setOrigin(Vector2f(8.f, 8.f));
 		player->addComponent<PlayerPhysicsComponent>(Vector2f(0.4f, 0.8f) * tileSize);
 	}
 

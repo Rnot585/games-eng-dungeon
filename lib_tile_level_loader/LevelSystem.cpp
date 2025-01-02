@@ -296,7 +296,7 @@ void LevelSystem::buildSprites(bool optimise) {
 	//Load textures into a dictionary. Uses dictionary to increase readability
 	_spriteSheets[' '].loadFromFile("res/spritesheets/Empty.png");
 	_spriteSheets['s'].loadFromFile("res/spritesheets/Start.png");
-	_spriteSheets['e'].loadFromFile("res/spritesheets/Ennd.png");
+	_spriteSheets['e'].loadFromFile("res/spritesheets/End.png");
 	_spriteSheets['w'].loadFromFile("res/spritesheets/Wall.png");
 	_spriteSheets['n'].loadFromFile("res/spritesheets/Enemy.png");
 	_spriteSheets['+'].loadFromFile("res/spritesheets/Waypoint.png");
@@ -426,8 +426,10 @@ void LevelSystem::buildSprites(bool optimise) {
 		tile->setTextureRect(sf::IntRect(Vector2(0,0), (Vector2<int>)t.s * 16 / (int)_tileSize));
 		_textureSprites.push_back(move(tile));
 
-		std::cout << "TILE SIZE: " << t.s/16.f << "\n";
+		//std::cout << "TILE SIZE: " << t.s/16.f << "\n";
 	}
+
+	
 
 	std::cout << "Level with " << (_width * _height) << " Tiles, With " << nonempty
 		<< " Not Empty, using: " << _sprites.size() << " Sprites\n";
