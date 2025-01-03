@@ -31,7 +31,7 @@ void Level1Scene::Load() {
 		//s->getShape().setOrigin(Vector2f(0.4f, 0.8f)*tileSize/2.f);
 
 		shared_ptr<sf::Texture> playerTex = make_shared<sf::Texture>();
-		playerTex->loadFromFile("res/spritesheets/WeeCharacter.png");
+		playerTex->loadFromFile("res/spritesheets/WeeCharacter sprst.png");
 
 		auto s = player->addComponent<SpriteComponent>();
 		s->setTexure(playerTex);
@@ -71,6 +71,11 @@ void Level1Scene::Update(const double& dt) {
 	if (ls::getTileAt(player->getPosition()) == ls::END) {
 		Engine::ChangeScene((Scene*)&level2);
 	}
+
+	if (Keyboard::isKeyPressed(Keyboard::Space)) {
+		player->get_components<SpriteComponent>()[0]->playAnimation("walk");
+	}
+
 	Scene::Update(dt);
 }
 
