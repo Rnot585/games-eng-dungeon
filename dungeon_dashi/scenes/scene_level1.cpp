@@ -72,10 +72,6 @@ void Level1Scene::Update(const double& dt) {
 		Engine::ChangeScene((Scene*)&level2);
 	}
 
-	if (Keyboard::isKeyPressed(Keyboard::Space)) {
-		player->get_components<SpriteComponent>()[0]->playAnimation("walk");
-	}
-
 	Scene::Update(dt);
 }
 

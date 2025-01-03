@@ -68,6 +68,8 @@ void PlayerPhysicsComponent::update(double dt) {
 			if (getVelocity().x > -_maxVelocity.x)
 				impulse({ -(float)(dt * _groundspeed), 0 });
 		}
+
+		_parent->get_components<SpriteComponent>()[0]->playAnimation("walk", false);
 	}
 	else {
 		// Dampen X axis movement
