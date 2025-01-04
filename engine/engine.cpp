@@ -173,6 +173,8 @@ void Scene::LoadAsync() { _loaded_future = std::async(&Scene::Load, this); }
 
 sf::Vector2u Engine::getWindowSize() { return _window->getSize(); }
 
+void Engine::setWindowSize(Vector2u newSize) {_window->setSize(newSize); }
+
 sf::RenderWindow& Engine::GetWindow() { return *_window; }
 
 namespace timing {
