@@ -13,22 +13,38 @@ using namespace sf;
 static shared_ptr<Entity> player;
 void Level2Scene::Load() {
   cout << "Scene 2 Load" << endl;
-  ls::loadLevelFile("res/level_2.txt", 40.0f);
-  auto ho = Engine::getWindowSize().y - (ls::getHeight() * 40.f);
-  ls::setOffset(Vector2f(0, ho));
+
+  float tileSize = 40.f;
+
+  ls::loadLevelFile("res/level_2.txt", tileSize);
+
+  auto ho = Engine::getWindowSize().y - (ls::getHeight() * tileSize);
+
+  //ls::setOffset(Vector2f(0, ho));
 
   // Create player
   {
     // *********************************
-
+      player = makeEntity();
+      player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
 
 
 
 
 
     // *********************************
+ 
+      shared_ptr<sf::Texture> playerTex = make_shared<sf::Texture>();
+      playerTex->loadFromFile("res/spritesheets/WeeCharacter.png");
+
+      auto s = player->addComponent<SpriteComponent>();
+      s->setTexure(playerTex);
+      s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
+      s->getSprite().setOrigin(Vector2f(8.f, 8.f));
+      player->addComponent<PlayerPhysicsComponent>(Vector2f(0.4f, 0.8f) * tileSize);
+
     player->addTag("player");
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
+    //player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
   }
 
   // Create Enemy
@@ -39,12 +55,21 @@ void Level2Scene::Load() {
     // *********************************
     // Add HurtComponent
 
+    enemy->addComponent<HurtComponent>();
+
     // Add ShapeComponent, Red 16.f Circle
 
+    shared_ptr<sf::Texture> enmTex = make_shared<sf::Texture>();
+    enmTex->loadFromFile("res/spritesheets/EnemyStill.png");
 
-
+    auto s = enemy->addComponent<SpriteComponent>();
+    s->setTexure(enmTex);
+    s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
+    s->getSprite().setOrigin(Vector2f(8.f, 8.f));
 
     // Add EnemyAIComponent
+
+    enemy->addComponent<EnemyAIComponent>();
 
     // *********************************
   }
@@ -65,11 +90,14 @@ void Level2Scene::Load() {
   {
     // *********************************
 
-
-
-
-
-
+      auto walls = ls::findTiles(ls::WALL);
+      for (auto w : walls) {
+          auto pos = ls::getTilePosition(w);
+          pos += Vector2f(tileSize / 2, tileSize / 2); //offset to center
+          auto e = makeEntity();
+          e->setPosition(pos);
+          e->addComponent<PhysicsComponent>(false, Vector2f(tileSize, tileSize));
+      }
 
 
     // *********************************
