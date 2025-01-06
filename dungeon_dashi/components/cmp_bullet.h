@@ -9,6 +9,6 @@ protected:
 public:
   void update(double dt) override;
   void render() override {}
-  explicit BulletComponent(Entity* p, float lifetime = 3.f);
+  explicit BulletComponent(Entity* p, float lifetime = 1.f);
   BulletComponent() = delete;
 };

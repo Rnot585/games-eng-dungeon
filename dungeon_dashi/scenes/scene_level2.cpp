@@ -35,7 +35,7 @@ void Level2Scene::Load() {
     // *********************************
  
       shared_ptr<sf::Texture> playerTex = make_shared<sf::Texture>();
-      playerTex->loadFromFile("res/spritesheets/WeeCharacter.png");
+      playerTex->loadFromFile("res/spritesheets/WeeCharacter sprst.png");
 
       auto s = player->addComponent<SpriteComponent>();
       s->setTexure(playerTex);
@@ -60,12 +60,13 @@ void Level2Scene::Load() {
     // Add ShapeComponent, Red 16.f Circle
 
     shared_ptr<sf::Texture> enmTex = make_shared<sf::Texture>();
-    enmTex->loadFromFile("res/spritesheets/EnemyStill.png");
+    enmTex->loadFromFile("res/spritesheets/EnemyWalk.png");
 
     auto s = enemy->addComponent<SpriteComponent>();
     s->setTexure(enmTex);
     s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
     s->getSprite().setOrigin(Vector2f(8.f, 8.f));
+    
 
     // Add EnemyAIComponent
 

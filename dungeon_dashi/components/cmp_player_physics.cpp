@@ -2,6 +2,9 @@
 #include "system_physics.h"
 #include <LevelSystem.h>
 #include <SFML/Window/Keyboard.hpp>
+#include <engine.h>
+#include "cmp_bullet.h"
+#include "cmp_actor_movement.h"
 
 using namespace std;
 using namespace sf;
@@ -11,12 +14,14 @@ using namespace Physics;
 static std::map<String, Keyboard::Key> keybindsMap = {
 	{"move_Left", Keyboard::A},
 	{"move_Right", Keyboard::D},
-	{"move_Up", Keyboard::W},
-	{"move_Down", Keyboard::S},
+	//{"move_Up", Keyboard::W},
+	//{"move_Down", Keyboard::S},
 	{"move_Jump", Keyboard::Space},
+	{"shoot", Keyboard::RShift},
 	{"move_GravityFlip", Keyboard::Up}
 };
 
+bool CharDir = true;    //Direction character is facing --  True=Left / False=Right
 
 //Keyboard::Key keybinds[] = { 
 //    Keyboard::A, //Move left
@@ -62,11 +67,31 @@ void PlayerPhysicsComponent::update(double dt) {
 		// Moving Either Left or Right
 		if (Keyboard::isKeyPressed(keybindsMap["move_Right"])) {
 			if (getVelocity().x < _maxVelocity.x)
-				impulse({ (float)(dt * _groundspeed), 0 });
+				if (CharDir == false) {  //Check if character is facing right
+					impulse({ (float)(dt * _groundspeed), 0 });
+				}
+				else {
+					_parent->get_components<SpriteComponent>()[0]->getSprite().scale(-1.f, 1.f);  //Flip sprite Direction
+					impulse({ (float)(dt * _groundspeed), 0 });
+					if (CharDir == true) {
+						CharDir = false;
+					}
+				}
+
 		}
 		else {
 			if (getVelocity().x > -_maxVelocity.x)
-				impulse({ -(float)(dt * _groundspeed), 0 });
+				if (CharDir == true) {  //Check if character is facing left
+					impulse({ -(float)(dt * _groundspeed), 0 });
+				}
+				else {
+					_parent->get_components<SpriteComponent>()[0]->getSprite().scale(-1.f, 1.f);  //Flip sprite Direction
+					impulse({ -(float)(dt * _groundspeed), 0 });
+					if (CharDir == false) {
+						CharDir = true;
+					}
+				}
+
 		}
 
 		_parent->get_components<SpriteComponent>()[0]->playAnimation("walk", false);
@@ -77,8 +102,7 @@ void PlayerPhysicsComponent::update(double dt) {
 	}
 
 	// Handle Jump
-	if (Keyboard::isKeyPressed(keybindsMap["move_Jump"]) ||
-		Keyboard::isKeyPressed(keybindsMap["move_Up"])) {
+	if (Keyboard::isKeyPressed(keybindsMap["move_Jump"])) {
 		_grounded = isGrounded();
 		if (_grounded) {
 			setVelocity(Vector2f(getVelocity().x, 0.f));
@@ -88,14 +112,42 @@ void PlayerPhysicsComponent::update(double dt) {
 		}
 	}
 
+	// Handle Fireballs
+	if (Keyboard::isKeyPressed(keybindsMap["shoot"]) && _fireballCooldown <= 0 && _fireballPressedLastFrame == false) {  
+
+		auto fireball = _parent->scene->makeEntity();
+		fireball->setPosition(_parent->getPosition());
+		fireball->addComponent<BulletComponent>();
+
+		shared_ptr<sf::Texture> fireTex = make_shared<sf::Texture>();
+		fireTex->loadFromFile("res/spritesheets/Fireballsprst.png");
+
+		auto s = fireball->addComponent<SpriteComponent>();
+		s->setTexure(fireTex);
+		s->getSprite().setScale(Vector2f(40.f, 40.f) / 16.f);
+		s->getSprite().setOrigin(Vector2f(8.f, 8.f));
+
+		auto p = fireball->addComponent<PhysicsComponent>(false, Vector2f(8.f, 8.f));
+		//Need impulse code to move fireball
+
+		fireball->get_components<SpriteComponent>()[0]->playAnimation("walk", false);
+
+		_fireballCooldown = 0.5;
+	}
+	else if (_fireballCooldown > 0) {
+		_fireballCooldown -= dt;
+	}
+
+	_fireballPressedLastFrame = Keyboard::isKeyPressed(keybindsMap["shoot"]); //Makes it so fireballs can only shoot once per button press
 
 	//Handle Gravity Inversion
 	if (Keyboard::isKeyPressed(keybindsMap["move_GravityFlip"]) && _gravityChangeCooldown <= 0 && _gravityChangePressedLastFrame == false) {
-		//GravFlip();    //Old Method which inverted entire world Gravity, Caused noticable input lag
 		int GravMod = _body->GetGravityScale();
 		_body->SetGravityScale(GravMod * -1);   //New function which reverses the Gravity scaling on the player object exclusively
 
 		_gravityChangeCooldown = 0.1;
+
+		_parent->get_components<SpriteComponent>()[0]->getSprite().scale(1.f, -1.f);  //Flip sprite upside down
 	}
 	else if (_gravityChangeCooldown > 0) { //Added cooldown to stop gravity changing too quickly
 		//std::cout << _gravityChangeCooldown << "\n";

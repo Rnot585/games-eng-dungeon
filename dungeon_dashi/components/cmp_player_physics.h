@@ -11,6 +11,8 @@ protected:
 
 	double _gravityChangeCooldown;
 	bool _gravityChangePressedLastFrame;
+	double _fireballCooldown;
+	bool _fireballPressedLastFrame;
 
 	bool isGrounded() const;
 
