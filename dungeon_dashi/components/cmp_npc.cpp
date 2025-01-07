@@ -17,12 +17,10 @@ void NPCComponent::update(double dt) {
 
 	if (_interactCooldown > 0) {
 		_interactCooldown -= dt;
-		//std::cout << dt << "\n";
 	}
 
 	if (_isInteracting > 0) {
 		_isInteracting -= dt;
-		
 	}
 
 }
@@ -38,20 +36,21 @@ void NPCComponent::render() {
 
 NPCComponent::NPCComponent(Entity* const p) : Component(p), _sprite(std::make_shared<sf::Sprite>()) {
 	
-	
+	_name = "Berty!";
 	_font = Resources::get<sf::Font>("dogica.ttf");
 	_nameText.setString(_name);
 	_nameText.setFont(*_font);
 	_nameText.setCharacterSize(10);
-	_name = "Berty!";
+	
 
 	_dialogueText.setFont(*_font);
 	_dialogueText.setCharacterSize(10);
 	_dialogueText.setLineSpacing(1.5f);
-	_dialogueText.setString("Hello there!\nThe princess\nis in another\ncastle.");
+	_dialogueText.setString("");
 
 	_dialogue.push_back("Hello there!\nThe princess\nis in another\ncastle.");
-	_dialogue.push_back("Hello there!\nThe princess\nis in another\ncastle.");
+	_dialogue.push_back("It's dangerous \nto go alone \ntake this!");
+
 
 	_dialogueShape = std::make_shared<sf::RectangleShape>();
 	_dialogueShape->setSize(sf::Vector2f(150, 100));
@@ -81,7 +80,9 @@ void NPCComponent::playerInteract()
 	}
 	else if (_dialogue.size() <= _dialogueIndex && _interactCooldown <= 0) {
 		_dialogueText.setString("...");
+		_isInteracting = 3;
 		_interactCooldown = 0.5;
+		std::cout << "Interacted with NPC\n";
 	}
 }
 
