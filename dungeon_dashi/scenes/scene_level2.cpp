@@ -27,6 +27,7 @@ void Level2Scene::Load() {
     // *********************************
       player = makeEntity();
       player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
+      
  
       shared_ptr<sf::Texture> playerTex = make_shared<sf::Texture>();
       playerTex->loadFromFile("res/spritesheets/WeeCharacter sprst.png");
@@ -35,9 +36,13 @@ void Level2Scene::Load() {
       s->setTexure(playerTex);
       s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
       s->getSprite().setOrigin(Vector2f(8.f, 8.f));
-      player->addComponent<PlayerPhysicsComponent>(Vector2f(0.4f, 0.8f) * tileSize);
+      player->addComponent<PlayerPhysicsComponent>(Vector2f(0.4f, 0.8f) * tileSize)->fireBallUnlocked = true;
 
       player->addTag("player");
+
+      s->addAnimation("walk", { 0, 7 });
+      s->addAnimation("fireball", { 8, 11 });
+      s->addAnimation("jump", { 12, 17 });
     //player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
   }
 
@@ -63,11 +68,13 @@ void Level2Scene::Load() {
           s->setTexure(enmTex);
           s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
           s->getSprite().setOrigin(Vector2f(8.f, 8.f));
+          s->addAnimation("walk", { 0, 7 });
 
 
           // Add EnemyAIComponent
 
           e->addComponent<EnemyAIComponent>();
+          e->addTag("enemy");
       }
 
     // *********************************

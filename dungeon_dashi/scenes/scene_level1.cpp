@@ -101,7 +101,7 @@ void Level1Scene::Load() {
 
 	npc = makeEntity();
 	auto s = npc->addComponent<NPCComponent>();
-	npc->setPosition(Vector2f(200,650));
+	npc->setPosition(ls::getTilePosition(ls::findTiles(ls::WAYPOINT)[0]) + Vector2f(0.f, 20.f));
 	s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
 	s->getSprite().setOrigin(Vector2f(8.f, 8.f));
 

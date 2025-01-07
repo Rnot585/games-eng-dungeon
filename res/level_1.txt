@@ -1,7 +1,7 @@
 wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 w               w              w
 w               w     e        w
-w n             w   wwwww      w
+w +             w   wwwww      w
 wwwwwww     wwwww              w
 w               w          wwwww
 w               w www          w

@@ -300,11 +300,11 @@ void LevelSystem::buildSprites(bool optimise) {
 
 	//Load textures into a dictionary. Uses dictionary to increase readability
 	_spriteSheets[' '].loadFromFile("res/spritesheets/Empty.png");
-	_spriteSheets['s'].loadFromFile("res/spritesheets/Start.png");
-	_spriteSheets['e'].loadFromFile("res/spritesheets/End.png");
+	_spriteSheets['s'].loadFromFile("res/spritesheets/Door.png");
+	_spriteSheets['e'].loadFromFile("res/spritesheets/Door.png");
 	_spriteSheets['w'].loadFromFile("res/spritesheets/Ledge.png");
-	_spriteSheets['n'].loadFromFile("res/spritesheets/Enemy.png");
-	_spriteSheets['+'].loadFromFile("res/spritesheets/Waypoint.png");
+	_spriteSheets['n'].loadFromFile("res/spritesheets/Empty.png");
+	_spriteSheets['+'].loadFromFile("res/spritesheets/Empty.png");
 	_spriteSheets['h'].loadFromFile("res/spritesheets/hLedge.png");
 
 	//Modify textures were required

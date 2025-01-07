@@ -13,6 +13,7 @@ protected:
 	bool _gravityChangePressedLastFrame;
 	double _fireballCooldown;
 	bool _fireballPressedLastFrame;
+	
 
 	bool isGrounded() const;
 
@@ -22,4 +23,6 @@ public:
 	explicit PlayerPhysicsComponent(Entity* p, const sf::Vector2f& size);
 
 	PlayerPhysicsComponent() = delete;
+
+	bool fireBallUnlocked;
 };

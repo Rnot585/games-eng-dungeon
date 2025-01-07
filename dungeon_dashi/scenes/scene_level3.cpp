@@ -35,7 +35,11 @@ void Level3Scene::Load() {
       s->setTexure(playerTex);
       s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
       s->getSprite().setOrigin(Vector2f(8.f, 8.f));
-      player->addComponent<PlayerPhysicsComponent>(Vector2f(0.4f, 0.8f) * tileSize);
+      player->addComponent<PlayerPhysicsComponent>(Vector2f(0.4f, 0.8f) * tileSize)->fireBallUnlocked = true;
+
+      s->addAnimation("walk", { 0, 7 });
+      s->addAnimation("fireball", { 8, 11 });
+      s->addAnimation("jump", { 12, 17 });
 
       player->addTag("player");
 
@@ -82,11 +86,13 @@ void Level3Scene::Load() {
           s->setTexure(enmTex);
           s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
           s->getSprite().setOrigin(Vector2f(8.f, 8.f));
+          s->addAnimation("walk", { 0, 7 });
 
 
           // Add EnemyAIComponent
 
           e->addComponent<EnemyAIComponent>();
+          e->addTag("enemy");
       }
 
       // *********************************

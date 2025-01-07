@@ -138,7 +138,7 @@ void PlayerPhysicsComponent::update(double dt) {
 		}
 	}
 	// Handle Fireballs
-	if (Keyboard::isKeyPressed(keybindsMap["shoot"]) && _fireballCooldown <= 0 && _fireballPressedLastFrame == false) {
+	if (Keyboard::isKeyPressed(keybindsMap["shoot"]) && _fireballCooldown <= 0 && _fireballPressedLastFrame == false && fireBallUnlocked) {
 		auto fireball = _parent->scene->makeEntity();
 		
 		if (CharDir == true) {
@@ -247,6 +247,7 @@ PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p,
 	_body->SetFixedRotation(true);
 	//Bullet items have higher-res collision detection
 	_body->SetBullet(true);
+	fireBallUnlocked = false;
 
 	_gravityChangePressedLastFrame = false;
 	_gravityChangeCooldown = 0.1;

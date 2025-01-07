@@ -1,7 +1,10 @@
 #include "cmp_npc.h"
 #include <memory>
+#include <LevelSystem.h>
 #include <system_renderer.h>
 #include <system_resources.h>
+#include <engine.h>
+#include "cmp_player_physics.h"
 
 void NPCComponent::update(double dt) {
 	_sprite->setPosition(_parent->getPosition());
@@ -50,6 +53,7 @@ NPCComponent::NPCComponent(Entity* const p) : Component(p), _sprite(std::make_sh
 
 	_dialogue.push_back("Hello there!\nThe princess\nis in another\ncastle.");
 	_dialogue.push_back("It's dangerous \nto go alone \ntake this!");
+	_dialogue.push_back("Use RShift to\nshoot fireballs");
 
 
 	_dialogueShape = std::make_shared<sf::RectangleShape>();
@@ -59,8 +63,10 @@ NPCComponent::NPCComponent(Entity* const p) : Component(p), _sprite(std::make_sh
 	_dialogueShape->setOutlineThickness(4.f);
 
 	_texture = Resources::get<sf::Texture>("WeeCharacter.png");
-	_sprite->setColor(sf::Color::Red);
+	_sprite->setColor(sf::Color::Blue);
 	_sprite->setTexture(*_texture);
+
+	
 }
 
 void NPCComponent::addDialogue(const std::string& str)
@@ -75,12 +81,18 @@ void NPCComponent::playerInteract()
 		_dialogueText.setString(_dialogue[_dialogueIndex]);
 		_dialogueIndex++;
 		_interactCooldown = 0.5;
-		_isInteracting = 3;
+		_isInteracting = 5;
 		std::cout << "Interacted with NPC\n";
+
+		if (_dialogueIndex <= _dialogue.size())
+		{
+			auto player = _parent->scene->ents.find("player")[0];
+			player->get_components<PlayerPhysicsComponent>()[0]->fireBallUnlocked = true;
+		}
 	}
 	else if (_dialogue.size() <= _dialogueIndex && _interactCooldown <= 0) {
 		_dialogueText.setString("...");
-		_isInteracting = 3;
+		_isInteracting = 5;
 		_interactCooldown = 0.5;
 		std::cout << "Interacted with NPC\n";
 	}
