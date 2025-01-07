@@ -54,6 +54,8 @@ SpriteComponent::SpriteComponent(Entity* p)
 	_spriteSheetWidth = 1;
 }
 
+sf::Sprite& SpriteComponent::getSprite() const { return *_sprite; }
+
 
 void SpriteComponent::update(double dt) {
   _sprite->setPosition(_parent->getPosition());
@@ -79,7 +81,7 @@ void SpriteComponent::animate(double dt)
 			_currentAnim.first++;
 		}
 
-		std::cout << _currentAnim.first << std::endl;
+		//std::cout << _currentAnim.first << std::endl;
 	}
 	else if (_frameTime <= 0) {
 		_sprite->setTextureRect(sf::IntRect((_stillFrame % _spriteSheetWidth) * 16, int(_stillFrame / 16) * 16, 16, 16));
@@ -103,4 +105,4 @@ sf::Shape& ShapeComponent::getShape() const { return *_shape; }
 ShapeComponent::ShapeComponent(Entity* p)
     : Component(p), _shape(make_shared<sf::CircleShape>()) {}
 
-sf::Sprite& SpriteComponent::getSprite() const { return *_sprite; }
+

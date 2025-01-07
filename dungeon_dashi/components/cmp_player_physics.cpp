@@ -19,7 +19,8 @@ static std::map<String, Keyboard::Key> keybindsMap = {
 	//{"move_Down", Keyboard::S},
 	{"move_Jump", Keyboard::Space},
 	{"shoot", Keyboard::RShift},
-	{"move_GravityFlip", Keyboard::Up}
+	{"move_GravityFlip", Keyboard::Up},
+	{"key_Interact", Keyboard::E}
 };
 
 bool CharDir = true;    //Direction character is facing --  True=Left / False=Right
@@ -166,7 +167,7 @@ void PlayerPhysicsComponent::update(double dt) {
 
 	_gravityChangePressedLastFrame = Keyboard::isKeyPressed(keybindsMap["move_GravityFlip"]); //Makes it so gravity can only change once per button press
 
-	//std::cout << _gravityChangePressedLastFrame << "\n";
+	
 
 	//Are we in air?
 	if (!_grounded) {

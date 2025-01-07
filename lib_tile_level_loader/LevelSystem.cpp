@@ -297,13 +297,15 @@ void LevelSystem::buildSprites(bool optimise) {
 	_spriteSheets[' '].loadFromFile("res/spritesheets/Empty.png");
 	_spriteSheets['s'].loadFromFile("res/spritesheets/Start.png");
 	_spriteSheets['e'].loadFromFile("res/spritesheets/End.png");
-	_spriteSheets['w'].loadFromFile("res/spritesheets/Wall.png");
+	_spriteSheets['w'].loadFromFile("res/spritesheets/Ledge.png");
 	_spriteSheets['n'].loadFromFile("res/spritesheets/Enemy.png");
 	_spriteSheets['+'].loadFromFile("res/spritesheets/Waypoint.png");
+	_spriteSheets['h'].loadFromFile("res/spritesheets/hLedge.png");
 
 	//Modify textures were required
 	_spriteSheets.at(' ').setRepeated(true);
 	_spriteSheets.at('w').setRepeated(true);
+	_spriteSheets.at('h').setRepeated(true);
 
 
 
@@ -361,6 +363,9 @@ void LevelSystem::buildSprites(bool optimise) {
 			else {
 				if (samecount) {
 					last.s.x = (1 + samecount) * tls.x; // Expand tile
+					if (last.tile == 'w') {
+						last.tile = 'h';
+					}
 				}
 				//tps[i].c = Color::Green;
 				// write tile to list
@@ -372,6 +377,9 @@ void LevelSystem::buildSprites(bool optimise) {
 		// catch the last tile
 		if (samecount) {
 			last.s.x = (1 + samecount) * tls.x;
+			if (last.tile == 'w') {
+				last.tile = 'h';
+			}
 			tpo.push_back(last);
 		}
 
@@ -424,6 +432,9 @@ void LevelSystem::buildSprites(bool optimise) {
 		//tile->setOrigin({ 16.f,16.f });
 		tile->setScale(Vector2(_tileSize, _tileSize) / 16.f);
 		tile->setTextureRect(sf::IntRect(Vector2(0,0), (Vector2<int>)t.s * 16 / (int)_tileSize));
+
+		
+
 		_textureSprites.push_back(move(tile));
 
 		//std::cout << "TILE SIZE: " << t.s/16.f << "\n";

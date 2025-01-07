@@ -22,7 +22,8 @@ public:
 		END = 'e',
 		WALL = 'w',
 		ENEMY = 'n',
-		WAYPOINT = '+'
+		WAYPOINT = '+',
+		TORCH = 't'
 	};
 
 	static Tile getTile(sf::Vector2ul);

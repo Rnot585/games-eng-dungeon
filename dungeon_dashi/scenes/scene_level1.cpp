@@ -1,6 +1,7 @@
 #include "scene_level1.h"
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_sprite.h"
+#include "../components/cmp_npc.h"
 #include "../game.h"
 #include <LevelSystem.h>
 #include <iostream>
@@ -9,12 +10,13 @@
 #include "../components/cmp_enemy_ai.h"
 #include "../components/cmp_enemy_turret.h"
 #include "../components/cmp_physics.h"
-
+#include <maths.h>
 
 using namespace std;
 using namespace sf;
 
 static shared_ptr<Entity> player;
+static shared_ptr<Entity> npc;
 
 void Level1Scene::Load() {
 	cout << "Scene 1 Load" << endl;
@@ -95,6 +97,12 @@ void Level1Scene::Load() {
 		}
 	}
 
+	npc = makeEntity();
+	auto s = npc->addComponent<NPCComponent>();
+	npc->setPosition(Vector2f(200,650));
+	s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
+	s->getSprite().setOrigin(Vector2f(8.f, 8.f));
+
 	//Simulate long loading times
 	std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 	cout << " Scene 1 Load Done" << endl;
@@ -118,6 +126,13 @@ void Level1Scene::Update(const double& dt) {
 	else if (!player->isAlive()) {
 		Engine::ChangeScene((Scene*)&level1);
 	}
+
+	if (length(player->getPosition() - npc->getPosition()) < 30 && Keyboard::isKeyPressed(Keyboard::E)) {
+		npc->get_components<NPCComponent>()[0]->playerInteract();
+		
+	}
+
+	Scene::Update(dt);
 }
 
 void Level1Scene::Render() {
