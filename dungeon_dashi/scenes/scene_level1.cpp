@@ -42,6 +42,9 @@ void Level1Scene::Load() {
 		
 		auto s = player->addComponent<SpriteComponent>();
 		s->setTexure(playerTex);
+		s->addAnimation("walk", { 0, 7 });
+		s->addAnimation("fireball", { 8, 11 });
+		s->addAnimation("jump", { 12, 17 });
 		s->getSprite().setScale(Vector2f(tileSize, tileSize)/16.f);
 		s->getSprite().setOrigin(Vector2f(8.f, 8.f));
 		player->addComponent<PlayerPhysicsComponent>(Vector2f(0.4f, 0.8f) * tileSize);
@@ -54,6 +57,7 @@ void Level1Scene::Load() {
 	{
 
 		auto enemies = ls::findTiles(ls::ENEMY);
+		//auto enemies = ls::findTiles(ls::WAYPOINT);
 		for (auto n : enemies) {
 			auto pos = ls::getTilePosition(n);
 			pos += Vector2f(0, 24);
@@ -72,7 +76,7 @@ void Level1Scene::Load() {
 			s->setTexure(enmTex);
 			s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
 			s->getSprite().setOrigin(Vector2f(8.f, 8.f));
-
+			s->addAnimation("walk", { 0, 7 });
 
 			// Add EnemyAIComponent
 

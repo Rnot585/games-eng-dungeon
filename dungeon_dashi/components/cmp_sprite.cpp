@@ -48,7 +48,8 @@ SpriteComponent::SpriteComponent(Entity* p)
     : Component(p), _sprite(make_shared<sf::Sprite>()) {
 
 	_currentAnim = { 0, 0 };
-	_animations = { {"walk", {0,7}} };
+	//_animations = { {"walk", {0,7}} };
+	_animations = {};
 	_frameTime = 0;
 	_stillFrame = 0;
 	_spriteSheetWidth = 1;
@@ -70,7 +71,8 @@ void SpriteComponent::animate(double dt)
 {
 	if (_currentAnim.second && _frameTime <= 0) {
 
-		_sprite->setTextureRect(sf::IntRect((_currentAnim.first % _spriteSheetWidth) * 16, int(_currentAnim.first / 16) * 16, 16, 16));
+		_sprite->setTextureRect(sf::IntRect((_currentAnim.first % _spriteSheetWidth) * 16, int(_currentAnim.first / _spriteSheetWidth) * 16, 16, 16));
+		//std::cout << int(_currentAnim.first / _spriteSheetWidth) * 16 << std::endl;
 		_frameTime = 0.1;
 
 		if (_currentAnim.first >= _currentAnim.second) {

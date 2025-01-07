@@ -23,7 +23,7 @@ static std::map<String, Keyboard::Key> keybindsMap = {
 	{"key_Interact", Keyboard::E}
 };
 
-bool CharDir = true;    //Direction character is facing --  True=Left / False=Right
+bool CharDir = false;    //Direction character is facing --  True=Left / False=Right
 
 //Keyboard::Key keybinds[] = { 
 //    Keyboard::A, //Move left
@@ -43,11 +43,19 @@ bool PlayerPhysicsComponent::isGrounded() const {
 		contact->GetWorldManifold(&manifold);
 		const int numPoints = contact->GetManifold()->pointCount;
 		bool onTop = numPoints > 0;
+		bool onBottom = numPoints > 0;
 		// If all contacts are below the player.
 		for (int j = 0; j < numPoints; j++) {
 			onTop &= (manifold.points[j].y < pos.y - halfPlrHeigt);
 		}
 		if (onTop) {
+			return true;
+		}
+		// If all contacts are above the player.
+		for (int j = 0; j < numPoints; j++) {
+			onBottom &= (manifold.points[j].y > pos.y + halfPlrHeigt);
+		}
+		if (onBottom) {
 			return true;
 		}
 	}
@@ -58,50 +66,65 @@ bool PlayerPhysicsComponent::isGrounded() const {
 void PlayerPhysicsComponent::update(double dt) {
 
 	const auto pos = _parent->getPosition();
+	auto sprite = _parent->get_components<SpriteComponent>()[0];
 
 	//Teleport to start if we fall off map.
 	if (pos.y > ls::getHeight() * ls::getTileSize()) {
 		teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
 	}
 
-	if (Keyboard::isKeyPressed(keybindsMap["move_Left"]) ||
-		Keyboard::isKeyPressed(keybindsMap["move_Right"])) {
-		// Moving Either Left or Right
-		if (Keyboard::isKeyPressed(keybindsMap["move_Right"])) {
-			if (getVelocity().x < _maxVelocity.x)
-				if (CharDir == false) {  //Check if character is facing right
-					impulse({ (float)(dt * _groundspeed), 0 });
-				}
-				else {
-					_parent->get_components<SpriteComponent>()[0]->getSprite().scale(-1.f, 1.f);  //Flip sprite Direction
-					impulse({ (float)(dt * _groundspeed), 0 });
-					if (CharDir == true) {
-						CharDir = false;
-					}
-				}
-
+	int dir = (Keyboard::isKeyPressed(keybindsMap["move_Left"]) ? -1 : 0) + (Keyboard::isKeyPressed(keybindsMap["move_Right"]) ? 1 : 0);
+	if (dir) {
+		if (CharDir == dir > 0) {
+			sprite->getSprite().scale(-1.f, 1.f);  //Flip sprite Direction
+			CharDir = !CharDir;
 		}
-		else {
-			if (getVelocity().x > -_maxVelocity.x)
-				if (CharDir == true) {  //Check if character is facing left
-					impulse({ -(float)(dt * _groundspeed), 0 });
-				}
-				else {
-					_parent->get_components<SpriteComponent>()[0]->getSprite().scale(-1.f, 1.f);  //Flip sprite Direction
-					impulse({ -(float)(dt * _groundspeed), 0 });
-					if (CharDir == false) {
-						CharDir = true;
-					}
-				}
-
-		}
-
-		_parent->get_components<SpriteComponent>()[0]->playAnimation("walk", false);
+		impulse({ (float)(dt * _groundspeed * dir), 0 });
+		sprite->playAnimation("walk", false);
+		//sprite->getSprite().scale({ float(CharDir * -2) + 1, 1 });
 	}
 	else {
-		// Dampen X axis movement
 		dampen({ 0.9f, 1.0f });
 	}
+
+	//if (Keyboard::isKeyPressed(keybindsMap["move_Left"]) ||
+	//	Keyboard::isKeyPressed(keybindsMap["move_Right"])) {
+	//	// Moving Either Left or Right
+	//	if (Keyboard::isKeyPressed(keybindsMap["move_Right"])) {
+	//		if (getVelocity().x < _maxVelocity.x)
+	//			if (CharDir == true) {  //Check if character is facing right
+	//				
+	//			}
+	//			else {
+	//				sprite->getSprite().scale(-1.f, 1.f);  //Flip sprite Direction
+	//				impulse({ (float)(dt * _groundspeed), 0 });
+	//				CharDir = false;
+	//			}
+	//
+	//		impulse({ (float)(dt * _groundspeed), 0 });
+	//
+	//	}
+	//	else {
+	//		if (getVelocity().x > -_maxVelocity.x)
+	//			if (CharDir == false) {  //Check if character is facing left
+	//				impulse({ -(float)(dt * _groundspeed), 0 });
+	//			}
+	//			else {
+	//				sprite->getSprite().scale(-1.f, 1.f);  //Flip sprite Direction
+	//				impulse({ -(float)(dt * _groundspeed), 0 });
+	//				CharDir = true;
+	//			}
+	//
+	//	}
+	//
+	//	sprite->playAnimation("walk", false);
+	//}
+	//else {
+	//	// Dampen X axis movement
+	//	dampen({ 0.9f, 1.0f });
+	//}
+
+
 
 	// Handle Jump
 	if (Keyboard::isKeyPressed(keybindsMap["move_Jump"])) {
@@ -109,11 +132,11 @@ void PlayerPhysicsComponent::update(double dt) {
 		if (_grounded) {
 			setVelocity(Vector2f(getVelocity().x, 0.f));
 			teleport(Vector2f(pos.x, pos.y - 2.0f));
-			impulse(Vector2f(0, -6.f));
+			impulse(Vector2f(0, -6.f * _body->GetGravityScale()));
+			sprite->playAnimation("jump", true);
 
 		}
 	}
-
 	// Handle Fireballs
 	if (Keyboard::isKeyPressed(keybindsMap["shoot"]) && _fireballCooldown <= 0 && _fireballPressedLastFrame == false) {
 		auto fireball = _parent->scene->makeEntity();
@@ -157,6 +180,9 @@ void PlayerPhysicsComponent::update(double dt) {
 		fireball->get_components<SpriteComponent>()[0]->addAnimation("fire", { 0, 5 });
 		fireball->get_components<SpriteComponent>()[0]->playAnimation("fire", false);
 
+		
+		sprite->playAnimation("fireball", true);
+
 		_fireballCooldown = 0.5;
 		
 		
@@ -175,7 +201,7 @@ void PlayerPhysicsComponent::update(double dt) {
 
 		_gravityChangeCooldown = 0.1;
 
-		_parent->get_components<SpriteComponent>()[0]->getSprite().scale(1.f, -1.f);  //Flip sprite upside down
+		sprite->getSprite().scale(1.f, -1.f);  //Flip sprite upside down
 	}
 	else if (_gravityChangeCooldown > 0) { //Added cooldown to stop gravity changing too quickly
 		//std::cout << _gravityChangeCooldown << "\n";
@@ -187,11 +213,15 @@ void PlayerPhysicsComponent::update(double dt) {
 	
 
 	//Are we in air?
-	if (!_grounded) {
+	if (!isGrounded()) {
 		// Check to see if we have landed yet
 		_grounded = isGrounded();
 		// disable friction while jumping
 		setFriction(0.f);
+
+
+		//std::cout << _grounded << "\n";
+		sprite->playAnimation("jump", false);
 	}
 	else {
 		setFriction(0.1f);
