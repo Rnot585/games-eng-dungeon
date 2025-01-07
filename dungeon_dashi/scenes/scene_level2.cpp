@@ -27,12 +27,6 @@ void Level2Scene::Load() {
     // *********************************
       player = makeEntity();
       player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-
-
-
-
-
-    // *********************************
  
       shared_ptr<sf::Texture> playerTex = make_shared<sf::Texture>();
       playerTex->loadFromFile("res/spritesheets/WeeCharacter sprst.png");
@@ -43,34 +37,38 @@ void Level2Scene::Load() {
       s->getSprite().setOrigin(Vector2f(8.f, 8.f));
       player->addComponent<PlayerPhysicsComponent>(Vector2f(0.4f, 0.8f) * tileSize);
 
-    player->addTag("player");
+      player->addTag("player");
     //player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
   }
 
-  // Create Enemy
+  // Create Enemies
   {
-    auto enemy = makeEntity();
-    enemy->setPosition(ls::getTilePosition(ls::findTiles(ls::ENEMY)[0]) +
-                       Vector2f(0, 24));
-    // *********************************
-    // Add HurtComponent
-
-    enemy->addComponent<HurtComponent>();
-
-    // Add ShapeComponent, Red 16.f Circle
-
-    shared_ptr<sf::Texture> enmTex = make_shared<sf::Texture>();
-    enmTex->loadFromFile("res/spritesheets/EnemyWalk.png");
-
-    auto s = enemy->addComponent<SpriteComponent>();
-    s->setTexure(enmTex);
-    s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
-    s->getSprite().setOrigin(Vector2f(8.f, 8.f));
     
+      auto enemies = ls::findTiles(ls::ENEMY);
+      for (auto n : enemies) {
+          auto pos = ls::getTilePosition(n);
+          pos += Vector2f(0, 24);
+          auto e = makeEntity();
+          e->setPosition(pos);
+          // *********************************
+          // Add HurtComponent
 
-    // Add EnemyAIComponent
+          e->addComponent<HurtComponent>();
 
-    enemy->addComponent<EnemyAIComponent>();
+
+          shared_ptr<sf::Texture> enmTex = make_shared<sf::Texture>();
+          enmTex->loadFromFile("res/spritesheets/EnemyWalk.png");
+
+          auto s = e->addComponent<SpriteComponent>();
+          s->setTexure(enmTex);
+          s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
+          s->getSprite().setOrigin(Vector2f(8.f, 8.f));
+
+
+          // Add EnemyAIComponent
+
+          e->addComponent<EnemyAIComponent>();
+      }
 
     // *********************************
   }

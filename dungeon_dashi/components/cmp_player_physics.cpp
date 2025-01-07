@@ -113,10 +113,9 @@ void PlayerPhysicsComponent::update(double dt) {
 	}
 
 	// Handle Fireballs
-	if (Keyboard::isKeyPressed(keybindsMap["shoot"]) && _fireballCooldown <= 0 && _fireballPressedLastFrame == false) {  
-
+	if (Keyboard::isKeyPressed(keybindsMap["shoot"]) && _fireballCooldown <= 0 && _fireballPressedLastFrame == false) {
 		auto fireball = _parent->scene->makeEntity();
-		fireball->setPosition(_parent->getPosition());
+		fireball->setPosition(Vector2f(_parent->getPosition().x + 20.f, _parent->getPosition().y));
 		fireball->addComponent<BulletComponent>();
 
 		shared_ptr<sf::Texture> fireTex = make_shared<sf::Texture>();
@@ -127,15 +126,19 @@ void PlayerPhysicsComponent::update(double dt) {
 		s->getSprite().setScale(Vector2f(40.f, 40.f) / 16.f);
 		s->getSprite().setOrigin(Vector2f(8.f, 8.f));
 
-		auto p = fireball->addComponent<PhysicsComponent>(false, Vector2f(8.f, 8.f));
-		//Need impulse code to move fireball
+		auto p = fireball->addComponent<PhysicsComponent>(false,Vector2f(8.f, 8.f));
+		fireball->setPosition(Vector2f(fireball->getPosition().x + (20.f * dt), fireball->getPosition().y));
+
 
 		fireball->get_components<SpriteComponent>()[0]->playAnimation("walk", false);
 
 		_fireballCooldown = 0.5;
+		
+		
 	}
 	else if (_fireballCooldown > 0) {
 		_fireballCooldown -= dt;
+		
 	}
 
 	_fireballPressedLastFrame = Keyboard::isKeyPressed(keybindsMap["shoot"]); //Makes it so fireballs can only shoot once per button press
