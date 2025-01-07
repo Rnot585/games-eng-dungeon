@@ -5,6 +5,7 @@
 #include <engine.h>
 #include "cmp_bullet.h"
 #include "cmp_actor_movement.h"
+#include "cmp_hurt_player.h"
 
 using namespace std;
 using namespace sf;
@@ -126,11 +127,17 @@ void PlayerPhysicsComponent::update(double dt) {
 		s->getSprite().setScale(Vector2f(40.f, 40.f) / 16.f);
 		s->getSprite().setOrigin(Vector2f(8.f, 8.f));
 
-		auto p = fireball->addComponent<PhysicsComponent>(false,Vector2f(8.f, 8.f));
-		fireball->setPosition(Vector2f(fireball->getPosition().x + (20.f * dt), fireball->getPosition().y));
+		auto p = fireball->addComponent<PhysicsComponent>(true,Vector2f(8.f, 8.f));
+		//fireball->setPosition(Vector2f(fireball->getPosition().x + (20.f * dt), fireball->getPosition().y));
+		p->impulse(sf::rotate(Vector2f(20.f, 0.f), -_parent->getRotation()));
+		
+		fireball->addComponent<HurtComponent>(true);
+		
+		
 
 
-		fireball->get_components<SpriteComponent>()[0]->playAnimation("walk", false);
+		fireball->get_components<SpriteComponent>()[0]->addAnimation("fire", { 0, 5 });
+		fireball->get_components<SpriteComponent>()[0]->playAnimation("fire", false);
 
 		_fireballCooldown = 0.5;
 		

@@ -7,6 +7,9 @@
 #include <thread>
 #include "../components/cmp_hurt_player.h"
 #include "../components/cmp_enemy_ai.h"
+#include "../components/cmp_enemy_turret.h"
+#include "../components/cmp_physics.h"
+
 
 using namespace std;
 using namespace sf;
@@ -40,21 +43,25 @@ void Level1Scene::Load() {
 		s->getSprite().setScale(Vector2f(tileSize, tileSize)/16.f);
 		s->getSprite().setOrigin(Vector2f(8.f, 8.f));
 		player->addComponent<PlayerPhysicsComponent>(Vector2f(0.4f, 0.8f) * tileSize);
+
+		player->addTag("player");
 	}
 	//***************************
+	// Create Enemies
+	{
 
-	// Create enemies
-	/* {
 		auto enemies = ls::findTiles(ls::ENEMY);
+		int en = 0;
 		for (auto n : enemies) {
 			auto pos = ls::getTilePosition(n);
 			pos += Vector2f(0, 24);
 			auto e = makeEntity();
 			e->setPosition(pos);
-			//******************
-			// Add Hurt Component
-			e->addComponent<HurtComponent>();                                  //For some reason, attempting to run level 1 with this enemy spawner will crash the game
-																			   //This does not occur in either other level.
+			// *********************************
+			// Add HurtComponent
+
+			e->addComponent<HurtComponent>();
+
 
 			shared_ptr<sf::Texture> enmTex = make_shared<sf::Texture>();
 			enmTex->loadFromFile("res/spritesheets/EnemyWalk.png");
@@ -64,11 +71,16 @@ void Level1Scene::Load() {
 			s->getSprite().setScale(Vector2f(tileSize, tileSize) / 16.f);
 			s->getSprite().setOrigin(Vector2f(8.f, 8.f));
 
-			// Add Enemy AI Component
-			e->addComponent<EnemyAIComponent>();
-		}
-	}*/
 
+			// Add EnemyAIComponent
+
+			e->addComponent<EnemyAIComponent>();
+			e->addTag("enemy");
+			en++;
+		}
+
+		// *********************************
+	}
 
 
 	// Add physics colliders to level tiles.
@@ -98,12 +110,14 @@ void Level1Scene::UnLoad() {
 }
 
 void Level1Scene::Update(const double& dt) {
-
-	if (ls::getTileAt(player->getPosition()) == ls::END) {
+	Scene::Update(dt);
+	const auto pp = player->getPosition();
+	if (ls::getTileAt(pp) == ls::END) {
 		Engine::ChangeScene((Scene*)&level2);
 	}
-
-	Scene::Update(dt);
+	else if (!player->isAlive()) {
+		Engine::ChangeScene((Scene*)&level1);
+	}
 }
 
 void Level1Scene::Render() {
