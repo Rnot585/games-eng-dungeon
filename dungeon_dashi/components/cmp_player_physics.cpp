@@ -117,8 +117,18 @@ void PlayerPhysicsComponent::update(double dt) {
 	// Handle Fireballs
 	if (Keyboard::isKeyPressed(keybindsMap["shoot"]) && _fireballCooldown <= 0 && _fireballPressedLastFrame == false) {
 		auto fireball = _parent->scene->makeEntity();
-		fireball->setPosition(Vector2f(_parent->getPosition().x + 20.f, _parent->getPosition().y));
+		
+		if (CharDir == true) {
+			fireball->setPosition(Vector2f(_parent->getPosition().x - 20.f, _parent->getPosition().y));
+		}
+		else
+		{
+			fireball->setPosition(Vector2f(_parent->getPosition().x + 20.f, _parent->getPosition().y));
+		}
+
+
 		fireball->addComponent<BulletComponent>();
+
 
 		shared_ptr<sf::Texture> fireTex = make_shared<sf::Texture>();
 		fireTex->loadFromFile("res/spritesheets/Fireballsprst.png");
@@ -130,7 +140,14 @@ void PlayerPhysicsComponent::update(double dt) {
 
 		auto p = fireball->addComponent<PhysicsComponent>(true,Vector2f(8.f, 8.f));
 		//fireball->setPosition(Vector2f(fireball->getPosition().x + (20.f * dt), fireball->getPosition().y));
-		p->impulse(sf::rotate(Vector2f(20.f, 0.f), -_parent->getRotation()));
+		if (CharDir == true) {
+			p->impulse(Vector2f(-20.f, 0.f));
+		}
+		else
+		{
+			p->impulse(Vector2f(20.f, 0.f));
+		}
+		
 		
 		fireball->addComponent<HurtComponent>(true);
 		

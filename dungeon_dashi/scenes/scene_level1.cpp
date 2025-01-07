@@ -39,7 +39,7 @@ void Level1Scene::Load() {
 
 		shared_ptr<sf::Texture> playerTex = make_shared<sf::Texture>();
 		playerTex->loadFromFile("res/spritesheets/WeeCharacter sprst.png");
-
+		
 		auto s = player->addComponent<SpriteComponent>();
 		s->setTexure(playerTex);
 		s->getSprite().setScale(Vector2f(tileSize, tileSize)/16.f);
@@ -48,12 +48,12 @@ void Level1Scene::Load() {
 
 		player->addTag("player");
 	}
+
 	//***************************
 	// Create Enemies
 	{
 
 		auto enemies = ls::findTiles(ls::ENEMY);
-		int en = 0;
 		for (auto n : enemies) {
 			auto pos = ls::getTilePosition(n);
 			pos += Vector2f(0, 24);
@@ -63,7 +63,7 @@ void Level1Scene::Load() {
 			// Add HurtComponent
 
 			e->addComponent<HurtComponent>();
-
+			
 
 			shared_ptr<sf::Texture> enmTex = make_shared<sf::Texture>();
 			enmTex->loadFromFile("res/spritesheets/EnemyWalk.png");
@@ -78,12 +78,10 @@ void Level1Scene::Load() {
 
 			e->addComponent<EnemyAIComponent>();
 			e->addTag("enemy");
-			en++;
 		}
 
 		// *********************************
 	}
-
 
 	// Add physics colliders to level tiles.
 	{
@@ -120,6 +118,12 @@ void Level1Scene::UnLoad() {
 void Level1Scene::Update(const double& dt) {
 	Scene::Update(dt);
 	const auto pp = player->getPosition();
+
+	if (length(player->getPosition() - npc->getPosition()) < 30 && Keyboard::isKeyPressed(Keyboard::E)) {
+		npc->get_components<NPCComponent>()[0]->playerInteract();
+
+	}
+
 	if (ls::getTileAt(pp) == ls::END) {
 		Engine::ChangeScene((Scene*)&level2);
 	}
@@ -127,10 +131,7 @@ void Level1Scene::Update(const double& dt) {
 		Engine::ChangeScene((Scene*)&level1);
 	}
 
-	if (length(player->getPosition() - npc->getPosition()) < 30 && Keyboard::isKeyPressed(Keyboard::E)) {
-		npc->get_components<NPCComponent>()[0]->playerInteract();
-		
-	}
+	
 
 	Scene::Update(dt);
 }

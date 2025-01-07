@@ -95,6 +95,8 @@ void LevelSystem::loadLevelFile(const std::string& path, float tileSize) {
 	size_t w = 0, h = 0;
 	string buffer;
 
+	cout << "ooga" << endl;
+
 	// Load in file to buffer
 	ifstream f(path);
 	if (f.good()) {
@@ -107,6 +109,8 @@ void LevelSystem::loadLevelFile(const std::string& path, float tileSize) {
 	else {
 		throw string("Couldn't open level file: ") + path;
 	}
+
+	cout << "ooga" << endl;
 
 	std::vector<Tile> temp_tiles;
 	int widthCheck = 0;
@@ -128,7 +132,8 @@ void LevelSystem::loadLevelFile(const std::string& path, float tileSize) {
 		}
 		++widthCheck;
 	}
-
+	cout << "ooga" << endl;
+	
 	if (temp_tiles.size() != (w * h)) {
 		throw string("Can't parse level file") + path;
 	}
@@ -137,7 +142,7 @@ void LevelSystem::loadLevelFile(const std::string& path, float tileSize) {
 	_height = h;
 	std::copy(temp_tiles.begin(), temp_tiles.end(), &_tiles[0]);
 	std::cout << "Level " << path << " Loaded. " << w << "x" << h << std::endl;
-
+	cout << "ooga" << endl;
 	buildSprites(true);
 }
 
