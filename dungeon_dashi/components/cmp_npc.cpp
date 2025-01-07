@@ -43,7 +43,7 @@ NPCComponent::NPCComponent(Entity* const p) : Component(p), _sprite(std::make_sh
 	_nameText.setString(_name);
 	_nameText.setFont(*_font);
 	_nameText.setCharacterSize(10);
-	_name = "Bert!";
+	_name = "Berty!";
 
 	_dialogueText.setFont(*_font);
 	_dialogueText.setCharacterSize(10);
