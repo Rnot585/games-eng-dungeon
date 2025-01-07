@@ -12,7 +12,7 @@ void MenuScene::Load() {
   {
     auto txt = makeEntity();
     auto t = txt->addComponent<TextComponent>(
-        "Dungeon Dashi\nPress Space to Start");
+        "Dungeon Dashi\n\nPress Space to start\nPress Esc to quit\n\n\nCONTROLS:\n\nA+D to move left and right,\nSPACE to jump,\nE to interact,\nRSHIFT to shoot fireballs");
   }
   setLoaded(true);
 }
